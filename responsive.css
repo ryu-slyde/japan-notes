@@ -1,0 +1,28 @@
+/* Responsive layer */
+@media (max-width: 960px) {
+  .hero, .content-grid, .article-shell { grid-template-columns: 1fr; }
+  .hero { padding-top: 42px; }
+  .sidebar, .toc { position: static; }
+  .article-shell { gap: 24px; }
+}
+@media (max-width: 760px) {
+  .nav { min-height: 62px; }
+  .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
+  .nav-menu { position: absolute; left: 16px; right: 16px; top: 70px; display: none; flex-direction: column; align-items: stretch; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+  .nav-menu.is-open { display: flex; }
+  .header-actions { margin-left: auto; }
+  .icon-btn { padding-inline: 10px; }
+  .post-grid, .related-grid { grid-template-columns: 1fr; }
+  .footer-grid { flex-direction: column; }
+}
+@media (max-width: 520px) {
+  .container { width: min(100% - 24px, var(--container)); }
+  h1 { font-size: clamp(2.1rem, 12vw, 3.1rem); }
+  .hero-links { align-items: stretch; flex-direction: column; }
+  .btn { width: 100%; }
+  .search-panel { padding: 22px; }
+  .article-content { font-size: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; scroll-behavior: auto !important; transition-duration: .001ms !important; }
+}
