@@ -1,9 +1,12 @@
 // Progressive enhancements: theme, search, reading time, sharing, scroll UI.
 const posts = [
+  { title: '東京案内書', url: 'tokyo-guide.html', category: 'SEO Landing', excerpt: '東京を自転車で巡る個人ガイドとサイト案内。' },
   { title: '自転車で巡る東京の静けさと記憶', url: 'article.html', category: 'Travel Essay', excerpt: '谷中銀座から江戸東京たてもの園まで、東京を自転車で巡る旅。' },
-  { title: '都心で呼吸できる庭園', url: 'article.html#garden', category: 'Garden', excerpt: '小石川後楽園と皇居のお濠の静けさ。' },
-  { title: '保存された過去を歩く', url: 'article.html#edo', category: 'Culture', excerpt: '江戸東京たてもの園で感じた記憶。' },
-  { title: '好奇心が知性を動かす', url: 'article.html#science', category: 'Museum', excerpt: '科学技術館で見た学びの入口。' }
+  { title: '東京案内書のルート', url: 'routes.html', category: 'Routes', excerpt: 'map1 と map2 を分けて紹介する東京自転車ルート。' },
+  { title: '東京案内書のスポット', url: 'places.html', category: 'Places', excerpt: '谷中銀座、東京ドーム、庭園、科学技術館、東京大神宮、江戸東京たてもの園。' },
+  { title: 'Travel Essay', url: 'category-travel.html', category: 'Category', excerpt: '東京案内書の旅行記カテゴリー。' },
+  { title: 'タグ: 東京案内書', url: 'tag-tokyo-annai.html', category: 'Tag', excerpt: 'SEOキーワード東京案内書に関連するページ一覧。' },
+  { title: 'About Tokyo Slow Notes', url: 'about.html', category: 'About', excerpt: '東京案内書とブログの編集方針。' }
 ];
 const root = document.documentElement;
 const themeToggle = document.querySelector('[data-theme-toggle]');
@@ -78,3 +81,48 @@ document.querySelector('[data-copy-link]')?.addEventListener('click', async even
 document.querySelector('[data-native-share]')?.addEventListener('click', async () => {
   if (navigator.share) await navigator.share({ title: document.title, url: location.href });
 });
+// Temporary client-side access gate. This is not real security; HTML remains crawlable for SEO.
+const ACCESS_PASSWORD = 'tokyo2026';
+const ACCESS_SESSION_KEY = 'tokyo-slow-notes-access';
+function initAccessGate() {
+  if (sessionStorage.getItem(ACCESS_SESSION_KEY) === 'granted') return;
+  document.body.classList.add('auth-lock');
+  const gate = document.createElement('div');
+  gate.className = 'auth-gate';
+  gate.setAttribute('role', 'dialog');
+  gate.setAttribute('aria-modal', 'true');
+  gate.setAttribute('aria-labelledby', 'authTitle');
+  gate.innerHTML = `
+    <div class="auth-card">
+      <p class="eyebrow">Private Preview</p>
+      <h2 id="authTitle">Enter password</h2>
+      <p>この東京案内書サイトは一時的にプレビュー制限されています。</p>
+      <form class="auth-form" data-auth-form>
+        <label for="previewPassword">Password</label>
+        <input id="previewPassword" type="password" autocomplete="current-password" required>
+        <button type="submit">Open website</button>
+        <p class="auth-error" data-auth-error aria-live="polite"></p>
+      </form>
+      <p class="auth-note">Search engines can still read the page source for indexing.</p>
+    </div>`;
+  document.body.appendChild(gate);
+  const input = gate.querySelector('#previewPassword');
+  const error = gate.querySelector('[data-auth-error]');
+  gate.querySelector('[data-auth-form]').addEventListener('submit', event => {
+    event.preventDefault();
+    if (input.value === ACCESS_PASSWORD) {
+      sessionStorage.setItem(ACCESS_SESSION_KEY, 'granted');
+      document.body.classList.remove('auth-lock');
+      gate.remove();
+      return;
+    }
+    error.textContent = 'Password is incorrect.';
+    input.select();
+  });
+  setTimeout(() => input.focus(), 50);
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAccessGate);
+} else {
+  initAccessGate();
+}
